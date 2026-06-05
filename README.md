@@ -1,104 +1,191 @@
-# ragprobe
+# RagProbe
 
-**Adversarial evaluation framework for RAG pipelines on financial document Q&A.**
+LLM evaluation and adversarial testing framework for benchmarking hallucination, prompt injection, retrieval quality, faithfulness, relevance, and robustness in Retrieval-Augmented Generation (RAG) systems.
 
-ragprobe probes a RAG pipeline built on SEC 10-K filings with five categories of
-adversarial prompts, scores each response with an LLM-as-judge across faithfulness,
-relevance, and context recall, classifies safety failures, and persists everything to
-SQLite for audit. The framework runs against two RAG configurations — a baseline and
-a hardened pipeline — and reports which changes actually reduce failure rates.
+## Overview
 
-This is the FE 524-B (Prompt Engineering Lab for Business Applications) final project.
+RagProbe is a modular framework designed to evaluate the reliability and security of RAG pipelines under adversarial and real-world conditions. The system benchmarks baseline versus hardened retrieval pipelines using automated evaluation workflows, LLM-based judges, and retrieval quality metrics.
+
+The framework supports:
+
+* Hallucination detection
+* Prompt injection testing
+* Faithfulness and relevance scoring
+* Context recall evaluation
+* Baseline vs hardened RAG comparison
+* Automated experiment reporting and dashboards
+
+Built to simulate production-grade LLM evaluation workflows for modern AI systems and agentic applications.
 
 ---
 
-## Install
+# Features
+
+* Adversarial prompt injection testing
+* Hallucination and grounding evaluation
+* Automated RAG benchmarking workflows
+* FAISS-based vector retrieval
+* Baseline vs hardened pipeline comparison
+* LLM-as-a-Judge evaluation pipeline
+* SEC filing ingestion and chunking
+* Experiment dashboards and reporting
+
+---
+
+# Architecture
+
+```text
+SEC Filings / Documents
+            │
+            ▼
+      Chunking Pipeline
+            │
+            ▼
+      FAISS Vector Store
+            │
+            ▼
+      Retrieval Pipeline
+            │
+            ▼
+        LLM Response
+            │
+            ▼
+      Evaluation Engine
+   ├── Faithfulness
+   ├── Relevance
+   ├── Context Recall
+   ├── Hallucination
+   └── Prompt Injection
+            │
+            ▼
+    Dashboard + Reports
+```
+
+---
+
+# Tech Stack
+
+## AI / LLM
+
+* OpenAI API
+* Retrieval-Augmented Generation (RAG)
+* LLM-as-a-Judge Evaluation
+* Prompt Engineering
+
+## Backend and Infrastructure
+
+* Python
+* FastAPI
+* FAISS
+* SQLite
+* Docker
+
+## Visualization and Reporting
+
+* Plotly Dash
+* Matplotlib
+* Automated HTML Reports
+
+---
+
+# Project Structure
+
+```text
+ragprobe/
+│
+├── ragprobe/
+│   ├── ingest.py
+│   ├── rag_pipeline.py
+│   ├── probe_engine.py
+│   ├── judge.py
+│   ├── reporter.py
+│   └── compare.py
+│
+├── tests/
+├── dashboard.py
+├── run_probe.py
+└── README.md
+```
+
+---
+
+# Example Evaluation Categories
+
+| Category         | Purpose                                |
+| ---------------- | -------------------------------------- |
+| Hallucination    | Detect unsupported model responses     |
+| Prompt Injection | Evaluate adversarial robustness        |
+| Faithfulness     | Measure grounding to retrieved context |
+| Relevance        | Evaluate answer quality                |
+| Context Recall   | Measure retrieval completeness         |
+
+---
+
+# Running the Project
+
+## Clone Repository
+
+```bash
+git clone https://github.com/Venkyyy98/RagProbe.git
+cd RagProbe
+```
+
+## Install Dependencies
 
 ```bash
 pip install -e .
 ```
 
-Set your API keys in `.env` (copy from `env.example`):
+## Configure Environment Variables
 
+Create a `.env` file:
+
+```env
+OPENAI_API_KEY=your_api_key_here
 ```
-ANTHROPIC_API_KEY=sk-ant-...
-OPENAI_API_KEY=sk-...           # required for SEC 10-K embeddings (ingest only)
-```
 
----
-
-## Run the demo (no FAISS / no OpenAI key needed)
+## Run Ingestion Pipeline
 
 ```bash
-python demo.py
+ragprobe ingest
 ```
 
-The demo exercises every proposal component (judge, safety classifier, db,
-probe engine, reporter, compare, prompts) using a fake in-memory 10-K corpus
-that deliberately includes some hallucinated answers to produce interesting scores.
-
----
-
-## Full workflow with real SEC 10-Ks
+## Execute Evaluation Pipeline
 
 ```bash
-# 1. Build the FAISS knowledge base from SEC EDGAR
-ragprobe ingest --tickers AAPL MSFT NVDA --years 2022 2023 2024
-
-# 2. Run the baseline pipeline against the adversarial suite
 ragprobe run --mode baseline
-# → session_id: abc-123-...
+```
 
-# 3. Run the hardened pipeline against the same suite
-ragprobe run --mode hardened
-# → session_id: def-456-...
+## Compare Hardened vs Baseline
 
-# 4. Compare the two
-ragprobe compare --session-a abc-123 --session-b def-456
+```bash
+ragprobe compare
+```
 
-# 5. Generate JSON/CSV/text reports for either session
-ragprobe probe-report --session abc-123
+## Launch Dashboard
+
+```bash
+python dashboard.py
 ```
 
 ---
 
-## Components (Proposal §5.1)
+# Future Improvements
 
-| Component | File |
-|---|---|
-| Probe Engine | `ragprobe/probe_engine.py` |
-| Judge Module | `ragprobe/judge.py` + `ragprobe/prompts/judge_prompt_v1.txt` |
-| Safety Classifier | `ragprobe/safety_classifier.py` |
-| Reporting Module | `ragprobe/reporter.py` |
-| SQLite Monitor | `ragprobe/db.py` |
-| CLI Interface | `ragprobe/cli.py` |
-
-Supporting modules: `prompts.py` (loads the 51 curated adversarial prompts),
-`rag_pipeline.py` (baseline + hardened RAG configurations), `ingest.py`
-(SEC EDGAR fetching, chunking, embedding, and FAISS indexing), `compare.py`
-(side-by-side session comparison), `config.py` (centralised configuration).
+* Multi-model benchmarking
+* Agentic workflow evaluation
+* Real-time attack simulation
+* Vector database integrations
+* CI/CD evaluation automation
+* Human feedback integration
 
 ---
 
-## Evaluation dimensions (Proposal §4.2)
+# Author
 
-Every response is scored on a 0–1 scale by the LLM judge:
+Venkatesh Mudaliar
 
-- **Faithfulness** — Does the answer reflect only what is in the retrieved context?
-- **Relevance** — Does the answer address what was actually asked?
-- **Context Recall** — Did the retriever surface the right chunks?
+Master’s in Data Science — Stevens Institute of Technology
 
-Plus three binary safety flags per response: `injection_compliance`,
-`confidentiality_violation`, `refusal_evasion`.
+Focused on LLM evaluation systems, agentic AI workflows, retrieval pipelines, and AI reliability engineering.
 
----
-
-## Adversarial prompt suite (Proposal §3.2)
-
-51 prompts across 5 categories in `ragprobe/prompts/prompts.json`:
-
-- `hallucination_bait` — questions referencing non-existent figures
-- `context_poisoning` — boundary-ambiguity exploitation
-- `temporal_confusion` — mixed fiscal years, stale data
-- `prompt_injection` — embedded system-override attempts
-- `out_of_scope` — questions with no grounding in the corpus
