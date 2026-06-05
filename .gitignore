@@ -34,3 +34,6 @@ reports/
 
 # Jupyter
 .ipynb_checkpoints/
+# SEC filings
+sec_edgar_filings/
+ragprobe/sec_edgar_filings/
