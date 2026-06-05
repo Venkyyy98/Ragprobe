@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ragprobe"
+version = "0.1.0"
+description = "Adversarial evaluation framework for RAG pipelines on financial document Q&A"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Rohan Sagvekar" }]
+dependencies = [
+    "python-dotenv>=1.0",
+    "openai>=1.0",
+    "anthropic>=0.20",
+    "faiss-cpu>=1.7",
+    "tiktoken>=0.6",
+    "beautifulsoup4>=4.12",
+    "requests>=2.31",
+    "sec-edgar-downloader>=5.0",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
+
+[project.scripts]
+ragprobe = "ragprobe.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ragprobe*"]

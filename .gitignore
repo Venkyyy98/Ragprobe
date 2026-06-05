@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# macOS
+.DS_Store
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# FAISS indexes
+faiss_index/
+
+# Reports / generated outputs
+reports/
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
